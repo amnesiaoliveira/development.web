@@ -1,92 +1,85 @@
-@startuml
-class Usuario {
-  - id: Long
-  - nome: String
-  - telefone: String
-  - email: String
-  - avatar: String
-  - dataCadastro: Date
-  - ativo: Boolean
-}
+```mermaid
+classDiagram
+    class Usuario {
+        - Long id
+        - String nome
+        - String telefone
+        - String email
+        - String avatar
+        - Date dataCadastro
+        - Boolean ativo
+    }
 
-class Cliente extends Usuario {
-  - enderecos: List<Endereco>
-}
+    class Cliente {
+        - List<Endereco> enderecos
+    }
 
-class Prestador extends Usuario {
-  - cpf: String
-  - dataNascimento: Date
-  - raioAtendimentoKm: Integer
-  - precoHora: BigDecimal
-  - categorias: List<Categoria>
-  - documentosVerificados: Boolean
-  - notaMedia: Double
-  - totalServicos: Integer
-}
+    class Prestador {
+        - String cpf
+        - Date dataNascimento
+        - Integer raioAtendimentoKm
+        - BigDecimal precoHora
+        - List<Categoria> categorias
+        - Boolean documentosVerificados
+        - Double notaMedia
+        - Integer totalServicos
+    }
 
-class Categoria {
-  - id: Long
-  - nome: String (ex: "Montagem de Móveis")
-  - icone: String
-}
+    class Categoria {
+        - Long id
+        - String nome
+        - String icone
+    }
 
-class Servico {
-  - id: Long
-  - cliente: Cliente
-  - prestador: Prestador
-  - categoria: Categoria
-  - descricao: String
-  - fotosAntes: List<String>
-  - fotosDepois: List<String>
-  - valorCombinado: BigDecimal
-  - taxaPlataforma: BigDecimal
-  - dataAgendada: DateTime
-  - status: StatusServico
-  - avaliacaoCliente: Avaliacao?
-  - chat: Chat
-}
+    class Servico {
+        - Long id
+        - String descricao
+        - List<String> fotosAntes
+        - List<String> fotosDepois
+        - BigDecimal valorCombinado
+        - BigDecimal taxaPlataforma
+        - DateTime dataAgendada
+        - StatusServico status
+        - Avaliacao avaliacaoCliente
+        - Chat chat
+    }
 
-enum StatusServico {
-  AGUARDANDO_ORCAMENTOS,
-  ORCAMENTO_ACEITO,
-  AGENDADO,
-  EM_ANDAMENTO,
-  CONCLUIDO,
-  CANCELADO
-}
+    class StatusServico {
+    }
 
-class Avaliacao {
-  - nota: Integer (1-5)
-  - comentario: String
-  - fotos: List<String>
-  - data: DateTime
-}
+    class Avaliacao {
+        - Integer nota
+        - String comentario
+        - List<String> fotos
+        - DateTime data
+    }
 
-class Chat {
-  - mensagens: List<Mensagem>
-}
+    class Chat {
+        - List<Mensagem> mensagens
+    }
 
-class Mensagem {
-  - remetente: Usuario
-  - texto: String
-  - imagem: String?
-  - dataEnvio: DateTime
-}
+    class Mensagem {
+        - Usuario remetente
+        - String texto
+        - String imagem
+        - DateTime dataEnvio
+    }
 
-class Endereco {
-  - cep: String
-  - logradouro: String
-  - numero: String
-  - complemento: String
-  - bairro: String
-  - cidade: String
-  - uf: String
-  - latitude: Double
-  - longitude: Double
-}
+    class Endereco {
+        - String cep
+        - String logradouro
+        - String numero
+        - String complemento
+        - String bairro
+        - String cidade
+        - String uf
+        - Double latitude
+        - Double longitude
+    }
 
-Cliente "1" --> "*" Servico : solicita
-Prestador "1" --> "*" Servico : realiza
-Servico "1" --> "0..1" Avaliacao : possui
-Prestador "many" --> "many" Categoria : atua em
-@enduml
+    Usuario <|-- Cliente
+    Usuario <|-- Prestador
+    Cliente "1" --> "*" Servico : solicita
+    Prestador "1" --> "*" Servico : realiza
+    Servico --> "0..1" Avaliacao : possui
+    Prestador "*" --> "*" Categoria : atua em
