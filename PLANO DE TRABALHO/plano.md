@@ -80,7 +80,7 @@ Conectar clientes que precisam de serviços a profissionais autônomos qualifica
 | Modelagem de Software       | Draw.io / Figma                        |
 | Front-end                   | html + CSS + JS + Bootstrap            |
 | Back-end                    | Node.js + Express                      |
-| Banco de dados              | PostgreSQL ou Firebase                 |
+| Banco de dados              | MySQL                 |
 | Pagamentos (sinal)          | Mercado Pago ou Pix automático         |
 | Hospedagem                  | Vercel (front) + Render/Heroku (back)  |
 
