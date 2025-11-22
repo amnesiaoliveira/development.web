@@ -1,123 +1,74 @@
-┌────────────────┐       ┌──────────────────┐
-│    │   USUARIO      │       │   ENDERECO       │
-    ├────────────────┤       ├──────────────────┤
-    │ PK id          │       │ PK id            │
-    │ nome           │       │ cep              │
-    │ telefone       │       │ logradouro       │
-    │ email          │       │ numero           │
-    │ senha_hash     │       │ complemento      │
-    │ avatar_url     │       │ bairro           │
-    │ tipo (C/P/A)   │◄──────┤ cidade           │
-    │ ativo          │ 1   * │ uf               │
-    │ data_cadastro  │       │ latitude         │
-    └────────────────┘       │ longitude        │
-                             └──────────────────┘
-          ▲         ▲
-          │         │
-   ┌────────────┐ ┌────────────┐
-   │            │ │            │
-┌───────┐   ┌───────┐   ┌───────────┐
-│CLIENTE│   │PRESTADOR│   │ADMINISTRADOR│
-└───────┘   └───────┘   └───────────┘
-   │           │              │
-   │           │              │
-   │       ┌────────┐         │
-   │       │CATEGORIA│         │
-   │       └────────┘         │
-   │           │              │
-   │        *  │  *           │
-   │           ▼              │
-   │       ┌─────────────┐
-   │       │PRESTADOR_CATEGORIA│ (tabela de relacionamento)
-   │       ├─────────────┤
-   │       │prestador_id │
-   │       │categoria_id │
-   │       │preco_hora   │
-   │       │ativo        │
-   │       └─────────────┘
-   │
-   │
-   │           ┌─────────────────┐
-   │           │    SERVICO      │
-   │           ├─────────────────┤
-   │           │ PK id            │ PK
-   │           │ cliente_id       │ FK → CLIENTE
-   │           │ prestador_id     │ FK → PRESTADOR (pode ser NULL até aceitar)
-   │           │ categoria_id     │ FK
-   │           │ descricao        │
-   │           │ valor_combinado  │
-   │           │ taxa_plataforma  │
-   │           │ data_solicitacao │
-   │           │ data_agendada    │
-   │           │ status           │ (AGUARDANDO_ORCAMENTO, AGENDADO, etc.)
-   │           │ endereco_servico_id │ FK → ENDERECO
-   │           │ concluido_em     │
-   │           │ cancelado_em     │
-   │           └─────────────────┘
-   │                   │
-   │             *     │    1
-   │                   ▼
-   │           ┌─────────────────┐
-   │           │   AVALIACAO     │
-   │           ├─────────────────┤
-   │           │ PK id           │
-   │           │ servico_id      │ FK → SERVICO (única por serviço)
-   │           │ nota (1-5)      │
-   │           │ comentario      │
-   │           │ data_avaliacao  │
-   │           └─────────────────┘
-   │                   │
-   │             *     │
-   │                   ▼
-   │           ┌─────────────────┐
-   │           │   FOTO          │
-   │           ├─────────────────┤
-   │           │ PK id           │
-   │           │ servico_id      │ FK → SERVICO
-   │           │ avaliacao_id    │ FK → AVALIACAO (NULL se for "antes")
-   │           │ url             │
-   │           │ tipo            │ (ANTES / DEPOIS)
-   │           │ uploaded_at     │
-   │           └─────────────────┘
-   │
-   │
-   │           ┌─────────────────┐
-   └──────────►│   DOCUMENTO     │
-               ├─────────────────┤
-               ┌─────────────────┐
-               │ PK id           │                       │   PAGAMENTO     │
-               │ prestador_id    │ FK                    ├─────────────────┤
-               │ tipo            │ (RG, CPF, ANTECEDENTES)│ PK id           │
-               │ url             │                       │ servico_id      │ FK → SERVICO
-               │ status          │ (PENDENTE/APROVADO)   │ valor_total     │
-               │ verificado_em   │                       │ taxa_plataforma │
-               └─────────────────┘                       │ valor_prestador │
-                                                         │ metodo          │ (PIX, CARTAO)
-                                                         │ status          │ (PAGO, REEMBOLSADO)
-                                                         │ transaction_id  │
-                                                         └─────────────────┘
+usuarios (
+  id UUID PK,
+  nome VARCHAR(100),
+  telefone VARCHAR(20) UNIQUE,
+  email VARCHAR(100),
+  tipo ENUM('CLIENTE','PROFISSIONAL'),
+  created_at TIMESTAMP
+)
 
-Outras tabelas auxiliares importantes:
-┌─────────────────┐
-│   NOTIFICACAO   │
-├─────────────────┤
-│ id              │
-│ usuario_id      │ FK → USUARIO
-│ titulo          │
-│ mensagem        │
-│ tipo            │
-│ lida            │
-│ criado_em       │
-└─────────────────┘
+profissionais (
+  usuario_id UUID PK FK >- usuarios.id,
+  raio_atuacao_km INT DEFAULT 30,
+  nota_media DECIMAL(3,2) DEFAULT 0,
+  total_avaliacoes INT DEFAULT 0,
+  aceita_sinal BOOLEAN DEFAULT true
+)
 
-┌─────────────────┐
-│   MENSAGEM_CHAT │
-├─────────────────┤
-│ id              │
-│ servico_id      │ FK → SERVICO
-│ remetente_id    │ FK → USUARIO
-│ texto           │
-│ imagem_url      │
-│ enviado_em      │
-│ lida            │
-└─────────────────┘
+categorias_profissional (
+  profissional_id UUID FK,
+  categoria_id UUID FK,
+  PRIMARY KEY (profissional_id, categoria_id)
+)
+
+demandas (
+  id UUID PK,
+  cliente_id UUID FK >- usuarios.id,
+  titulo VARCHAR(150),
+  descricao TEXT,
+  categoria_id UUID FK,
+  cep VARCHAR(9),
+  raio_desejado_km INT,
+  orcamento_estimado DECIMAL(10,2),
+  status VARCHAR(20) DEFAULT 'ABERTA',
+  created_at TIMESTAMP
+)
+
+fotos (
+  id UUID PK,
+  demanda_id UUID FK, -- pode ser NULL (portfolio)
+  profissional_id UUID FK, -- pode ser NULL
+  url TEXT,
+  tipo VARCHAR(20) -- PROBLEMA, PORTFOLIO, RESULTADO
+)
+
+propostas (
+  id UUID PK,
+  demanda_id UUID FK >- demandas.id,
+  profissional_id UUID FK >- usuarios.id,
+  valor DECIMAL(10,2),
+  prazo_dias INT,
+  mensagem TEXT,
+  status VARCHAR(15) DEFAULT 'ENVIADA',
+  created_at TIMESTAMP
+)
+
+avaliacoes (
+  id UUID PK,
+  demanda_id UUID FK,
+  profissional_id UUID FK,
+  nota INT CHECK (nota BETWEEN 1 AND 5),
+  comentario TEXT,
+  foto_resultado_id UUID FK >- fotos.id,
+  created_at TIMESTAMP
+)
+
+transacoes_sinal (
+  id UUID PK,
+  proposta_id UUID FK,
+  valor DECIMAL(10,2),
+  status VARCHAR(15),
+  pix_qrcode TEXT,
+  pix_copiaecola TEXT,
+  created_at TIMESTAMP
+)
