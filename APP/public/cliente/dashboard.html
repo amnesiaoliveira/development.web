@@ -3,89 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minhas Demandas • Cliente</title>
+  <title>Minhas Demandas • ServiConecta</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+    .navbar { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .card-demanda { border: none; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s; }
+    .card-demanda:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+    .foto-demanda { height: 200px; object-fit: cover; }
     .status-aberta { background: #fff3cd; color: #856404; }
- .status-reservada { background: #d1ecf1; color: #0c5460; }
- .status-concluida { background: #d4edda; color: #155724; }
- .foto-demanda { width: 100%; height: 180px; object-fit: cover; }
+    .status-reservada { background: #d1ecf1; color: #0c5460; }
+    .status-concluida { background: #d4edda; color: #155724; }
+    .status-cancelada { background: #f8d7da; color: #721c24; }
+    .btn-fab { 
+      position: fixed; bottom: 25px; right: 25px; 
+      width: 60px; height: 60px; border-radius: 50%; 
+      font-size: 1.8rem; box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+      z-index: 1000;
+    }
+    .counter-card { background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
   </style>
 </head>
-<body class="bg-light">
+<body>
 
-  <nav class="navbar navbar-dark bg-primary shadow">
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-primary">
     <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">ServiConecta</span>
-      <div>
-        <span class="text-white me-3" id="nomeCliente">Carregando...</span>
-        <button class="btn btn-outline-light" onclick="localStorage.clear(); location.href='/'">Sair</button>
+      <span class="navbar-brand mb-0 h1 d-flex align-items-center">
+        <i class="bi bi-tools me-2"></i> ServiConecta
+      </span>
+      <div class="d-flex align-items-center text-white">
+        <span class="me-3" id="nomeCliente">Carregando...</span>
+        <button class="btn btn-outline-light btn-sm" onclick="localStorage.clear(); location.href='/'">
+          <i class="bi bi-box-arrow-right"></i> Sair
+        </button>
       </div>
     </div>
   </nav>
 
   <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>Minhas Demandas</h3>
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNovaDemanda">
-        Nova Demanda
-      </button>
+
+    <!-- Contadores -->
+    <div class="row mb-4 g-3">
+      <div class="col-6 col-md-3">
+        <div class="counter-card">
+          <h3 class="text-primary mb-0" id="totalDemandas">0</h3>
+          <small class="text-muted">Total</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="counter-card">
+          <h3 class="text-warning mb-0" id="abertas">0</h3>
+          <small class="text-muted">Abertas</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="counter-card">
+          <h3 class="text-info mb-0" id="reservadas">0</h3>
+          <small class="text-muted">Reservadas</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="counter-card">
+          <h3 class="text-success mb-0" id="concluidas">0</h3>
+          <small class="text-muted">Concluídas</small>
+        </div>
+      </div>
     </div>
 
-    <div id="listaMinhasDemandas">
-      <div class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
+    <h4 class="mb-4">
+      <i class="bi bi-list-check"></i> Minhas Demandas
+    </h4>
+
+    <div id="listaMinhasDemandas" class="row g-3">
+      <div class="col-12 text-center py-5">
+        <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+        <p class="mt-3 text-muted">Carregando suas demandas...</p>
       </div>
     </div>
   </div>
 
-  <!-- Modal Nova Demanda -->
+  <!-- Botão Flutuante Nova Demanda -->
+  <button class="btn btn-primary btn-lg rounded-circle shadow-lg btn-fab" data-bs-toggle="modal" data-bs-target="#modalNovaDemanda">
+    <i class="bi bi-plus-lg"></i>
+  </button>
+
+  <!-- Modal Nova Demanda (mesmo do anterior, só melhorei o visual) -->
   <div class="modal fade" id="modalNovaDemanda" tabindex="-1">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Criar Nova Demanda</h5>
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white rounded-top-4">
+          <h5 class="modal-title"><i class="bi bi-megaphone"></i> Publicar Nova Demanda</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <form id="formNovaDemanda">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Título da demanda *</label>
-              <input type="text" class="form-control" name="titulo" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Categoria *</label>
-              <select class="form-select" name="categoria_id" required>
-                <option value="">Selecione...</option>
-                <!-- Preenchido via JS -->
+        <form id="formNovaDemanda" class="p-3">
+          <div class="row g-3">
+            <div class="col-12"><input type="text" class="form-control form-control-lg" name="titulo" placeholder="Ex: Consertar tomada queimada" required></div>
+            <div class="col-md-6">
+              <select class="form-select form-select-lg" name="categoria_id" required>
+                <option value="">Selecione a categoria</option>
               </select>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Descrição detalhada *</label>
-              <textarea class="form-control" rows="4" name="descricao" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">CEP do serviço *</label>
-              <input type="text" class="form-control" name="cep" placeholder="00000-000" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Raio desejado (km)</label>
+            <div class="col-md-6"><input type="text" class="form-control form-control-lg" name="cep" placeholder="CEP do serviço" required></div>
+            <div class="col-12"><textarea class="form-control" rows="3" name="descricao" placeholder="Descreva o problema com detalhes..." required></textarea></div>
+            <div class="col-md-6"><input type="number" class="form-control form-control-lg" name="orcamento_estimado" placeholder="Orçamento (opcional)"></div>
+            <div class="col-md-6">
               <input type="range" class="form-range" min="1" max="50" value="15" name="raio_desejado_km">
-              <div class="text-center"><span id="raioValor">15 km</span></div>
+              <div class="text-center"><small>Raio: <span id="raioValor">15 km</span></small></div>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Orçamento estimado (R$)</label>
-              <input type="number" class="form-control" name="orcamento_estimado" placeholder="A combinar">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Foto do problema * (obrigatória)</label>
-              <input type="file" class="form-control" accept="image/*" name="foto" required>
+            <div class="col-12">
+              <label class="form-label fw-bold text-primary"><i class="bi bi-camera"></i> Foto do problema (obrigatória)</label>
+              <input type="file" class="form-control form-control-lg" accept="image/*" name="foto" required>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-success">Publicar Demanda</button>
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-success btn-lg">
+              <i class="bi bi-send"></i> Publicar Demanda
+            </button>
           </div>
         </form>
       </div>
@@ -99,76 +134,81 @@
     const payload = JSON.parse(atob(token.split('.')[1]));
     document.getElementById('nomeCliente').textContent = payload.nome;
 
-    // Carrega categorias no select
+    // Carrega categorias
     fetch('/api/categorias')
       .then(r => r.json())
       .then(cats => {
         const select = document.querySelector('select[name="categoria_id"]');
         cats.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.id; opt.textContent = c.nome;
-          select.appendChild(opt);
+          const opt = new Option(c.nome, c.id);
+          select.add(opt);
         });
       });
 
-    // Carrega demandas do cliente
-    async function carregarMinhasDemandas() {
-      const res = await fetch('/api/demandas/minhas', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
+    // Atualiza raio
+    document.querySelector('[name="raio_desejado_km"]').oninput = e => {
+      document.getElementById('raioValor').textContent = e.target.value + ' km';
+    };
+
+    // Carrega demandas com contadores
+    async function carregarDemandas() {
+      const res = await fetch('/api/demandas/minhas', { headers: { Authorization: 'Bearer ' + token } });
       const demandas = await res.json();
+
+      document.getElementById('totalDemandas').textContent = demandas.length;
+      document.getElementById('abertas').textContent = demandas.filter(d => d.status === 'ABERTA').length;
+      document.getElementById('reservadas').textContent = demandas.filter(d => d.status === 'RESERVADA').length;
+      document.getElementById('concluidas').textContent = demandas.filter(d => d.status === 'CONCLUIDA').length;
 
       const container = document.getElementById('listaMinhasDemandas');
       if (demandas.length === 0) {
-        container.innerHTML = '<p class="text-center text-muted py-5">Você ainda não criou nenhuma demanda.</p>';
+        container.innerHTML = `<div class="col-12 text-center py-5"><h5 class="text-muted">Você ainda não publicou nenhuma demanda</h5></div>`;
         return;
       }
 
       container.innerHTML = demandas.map(d => `
-        <div class="card mb-3 shadow-sm">
-          <img src="${d.foto_url || '/img/no-photo.png'}" class="card-img-top foto-demanda">
-          <div class="card-body">
-            <h5>${d.titulo}</h5>
-            <span class="badge ${d.status === 'ABERTA' ? 'bg-warning' : d.status === 'RESERVADA' ? 'bg-info' : 'bg-success'}">
-              ${d.status}
-            </span>
-            <p class="mt-2 mb-1"><strong>${d.categoria_nome}</strong> • ${d.cep}</p>
-            <small class="text-muted">${new Date(d.criado_em).toLocaleDateString('pt-BR')}</small>
+        <div class="col-md-6 col-lg-4">
+          <div class="card-demanda">
+            <img src="${d.foto_url || '/img/no-photo.png'}" class="foto-demanda">
+            <div class="p-3">
+              <h6 class="fw-bold">${d.titulo}</h6>
+              <span class="badge ${d.status === 'ABERTA' ? 'bg-warning' : d.status === 'RESERVADA' ? 'bg-info' : 'bg-success'}">
+                ${d.status}
+              </span>
+              <p class="small text-muted mt-2 mb-1"><i class="bi bi-geo-alt"></i> ${d.cep} • ${d.categoria_nome}</p>
+              <small class="text-muted"><i class="bi bi-calendar"></i> ${new Date(d.criado_em).toLocaleDateString('pt-BR')}</small>
+
+              <!-- BOTÃO DO CHAT AQUI -->
+              <div class="mt-3">
+                <button onclick="abrirChat('${d.id}')" class="btn btn-primary w-100">
+                  <i class="bi bi-chat-dots"></i> Abrir Chat
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       `).join('');
     }
 
-    // Envia nova demanda
-    document.getElementById('formNovaDemanda').onsubmit = async (e) => {
+    document.getElementById('formNovaDemanda').onsubmit = async e => {
       e.preventDefault();
       const formData = new FormData(e.target);
-
-      try {
-        const res = await fetch('/api/demandas', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + token },
-          body: formData
-        });
-
-        const json = await res.json();
-        if (res.ok) {
-          alert('Demanda criada com sucesso!');
-          bootstrap.Modal.getInstance(document.getElementById('modalNovaDemanda')).hide();
-          carregarMinhasDemandas();
-        } else {
-          alert(json.mensagem || 'Erro ao criar');
-        }
-      } catch (err) {
-        alert('Erro de conexão');
+      const res = await fetch('/api/demandas', { method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData });
+      const json = await res.json();
+      if (res.ok) {
+        alert('Demanda publicada com sucesso!');
+        bootstrap.Modal.getInstance(document.getElementById('modalNovaDemanda')).hide();
+        carregarDemandas();
+      } else {
+        alert(json.mensagem || 'Erro ao publicar');
       }
     };
-
-    document.querySelector('[name="raio_desejado_km"]').oninput = (e) => {
-      document.getElementById('raioValor').textContent = e.target.value + ' km';
-    };
-
-    carregarMinhasDemandas();
+    function abrirChat(demandaId) {
+      const url = `/chat/index.html?demanda=${demandaId}`;
+      window.open(url, '_blank');
+    }
+    
+    carregarDemandas();
   </script>
 </body>
 </html>

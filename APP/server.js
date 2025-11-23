@@ -9,7 +9,6 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: '*' } });
 
-// Conexão direta com MySQL do Docker
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'serviconecta_user',
@@ -28,19 +27,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-// Rotas
 app.use('/api/auth', require('./src/routes/auth.routes'));
 app.use('/api/demandas', require('./src/routes/demanda.routes'));
 app.use('/api/categorias', require('./src/routes/demanda.routes'));
 app.use('/api/categorias', require('./src/routes/categoria.routes'));
+app.use('/api/perfil', require('./src/routes/perfil.routes'));
+app.use('/api/mensagens', require('./src/routes/mensagem.routes'));
 
-// Página inicial
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-// WebSocket Chat
 require('./src/websocket/chat')(io);
 
 const PORT = 3000;

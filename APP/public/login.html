@@ -31,30 +31,39 @@
   </div>
 
   <script>
-    document.getElementById('formLogin').onsubmit = async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const dados = Object.fromEntries(formData);
+  document.getElementById('formLogin').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const dados = Object.fromEntries(formData);
 
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dados)
-        });
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
 
-        const json = await res.json();
-        if (res.ok) {
-          localStorage.setItem('token', json.token);
-          alert('Login realizado com sucesso!');
-          location.href = '/';
+      const json = await res.json();
+      if (res.ok) {
+        localStorage.setItem('token', json.token);
+        alert('Login realizado com sucesso!');
+
+        // === REDIRECIONAMENTO AUTOMÁTICO CORRETO ===
+        const payload = JSON.parse(atob(json.token.split('.')[1]));
+        if (payload.tipo === 'CLIENTE') {
+          location.href = '/cliente/dashboard.html';
+        } else if (payload.tipo === 'PROFISSIONAL') {
+          location.href = '/profissional/dashboard.html';
         } else {
-          alert(json.mensagem || 'Dados incorretos');
+          location.href = '/';
         }
-      } catch (err) {
-        alert('Erro de conexão');
+      } else {
+        alert(json.mensagem || 'Dados incorretos');
       }
-    };
-  </script>
+    } catch (err) {
+      alert('Erro de conexão');
+    }
+  };
+</script>
 </body>
 </html>

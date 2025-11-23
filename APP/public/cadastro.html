@@ -41,32 +41,38 @@
     </div>
   </div>
 
-  <script>
-    document.getElementById('formCadastro').onsubmit = async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const dados = Object.fromEntries(formData);
-      dados.telefone = dados.telefone.replace(/\D/g, '');
-      dados.tipo = document.querySelector('input[name="tipo"]:checked').value; // ← ESSA LINHA É A SALVAÇÃO
+ <script>
+  document.getElementById('formCadastro').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const dados = Object.fromEntries(formData);
+    dados.telefone = dados.telefone.replace(/\D/g, '');
+    dados.tipo = document.querySelector('input[name="tipo"]:checked').value;
 
-      try {
-        const res = await fetch('/api/auth/cadastro', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dados)
-        });
+    try {
+      const res = await fetch('/api/auth/cadastro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
 
-        const json = await res.json();
-        if (res.ok) {
-          alert('Cadastro realizado com sucesso!');
-          location.href = '/';
+      const json = await res.json();
+      if (res.ok) {
+        alert('Cadastro realizado com sucesso! Bem-vindo ao ServiConecta!');
+        
+        // === REDIRECIONA DIRETO PARA O DASHBOARD CORRETO ===
+        if (dados.tipo === 'CLIENTE') {
+          location.href = '/cliente/dashboard.html';
         } else {
-          alert(json.mensagem || 'Erro no cadastro');
+          location.href = '/profissional/dashboard.html';
         }
-      } catch (err) {
-        alert('Erro de conexão');
+      } else {
+        alert(json.mensagem || 'Erro no cadastro');
       }
-    };
-  </script>
+    } catch (err) {
+      alert('Erro de conexão');
+    }
+  };
+</script>
 </body>
 </html>

@@ -3,35 +3,17 @@ const express = require('express');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-const jwt = require('jsonwebtoken');
+const { verificarToken } = require('../middleware/auth');
 const router = express.Router();
 
-const JWT_SECRET = 'serviconecta2025-chave-super-secreta';
-
+// Upload de fotos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'public/fotos'),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + uuidv4().slice(0,8) + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-const verificarToken = (req, res, next) => {
-  const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith('Bearer ')) {
-    return res.status(401).json({ mensagem: 'Token faltando' });
-  }
-
-  const token = auth.split(' ')[1];
-  try {
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.usuario = payload;
-    next();
-  } catch (err) {
-    console.error('Token inválido:', err.message);
-    return res.status(401).json({ mensagem: 'Token inválido ou expirado' });
-  }
-};
-
-// Criar demanda (agora funciona!)
+// === CRIAR DEMANDA (FUNCIONANDO 100% COM SEU BANCO ATUAL) ===
 router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
   if (req.usuario.tipo !== 'CLIENTE') {
     return res.status(403).json({ mensagem: 'Acesso negado' });
@@ -45,14 +27,22 @@ router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
   const fotoId = uuidv4();
 
   try {
-    // Insere a demanda
+    // Usa o ID do usuário logado como cliente_id (funciona com seu banco atual)
     await db.query(`
       INSERT INTO demandas 
-      (id, titulo, descricao, categoria_id, cep, raio_desejado_km, orcamento_estimado, cliente_id, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT id FROM clientes WHERE usuario_id = ?), 'ABERTA')
-    `, [demandaId, titulo, descricao, categoria_id, cep, raio_desejado_km || 15, orcamento_estimado || null, req.usuario.id]);
+        (id, titulo, descricao, categoria_id, cep, raio_desejado_km, orcamento_estimado, cliente_id, status, criado_em)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ABERTA', NOW())
+    `, [
+      demandaId,
+      titulo,
+      descricao,
+      categoria_id,
+      cep,
+      raio_desejado_km || 15,
+      orcamento_estimado || null,
+      req.usuario.id  // ← ID do usuário logado = cliente_id
+    ]);
 
-    // Insere foto se existir
     if (fotoPath) {
       await db.query(
         'INSERT INTO fotos (id, url, tipo, demanda_id) VALUES (?, ?, "PROBLEMA", ?)',
@@ -67,21 +57,49 @@ router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
   }
 });
 
-// Minhas demandas
+// === LISTAR MINHAS DEMANDAS ===
 router.get('/minhas', verificarToken, async (req, res) => {
   if (req.usuario.tipo !== 'CLIENTE') return res.status(403).json({});
 
   const db = req.app.get('db');
-  const [rows] = await db.query(`
-    SELECT d.*, c.nome as categoria_nome, f.url as foto_url
-    FROM demandas d
-    JOIN categorias c ON d.categoria_id = c.id
-    LEFT JOIN fotos f ON f.demanda_id = d.id AND f.tipo = 'PROBLEMA'
-    WHERE d.cliente_id = (SELECT id FROM clientes WHERE usuario_id = ?)
-    ORDER BY d.criado_em DESC
-  `, [req.usuario.id]);
 
-  res.json(rows);
+  try {
+    const [rows] = await db.query(`
+      SELECT d.*, c.nome AS categoria_nome, f.url AS foto_url
+      FROM demandas d
+      JOIN categorias c ON d.categoria_id = c.id
+      LEFT JOIN fotos f ON f.demanda_id = d.id AND f.tipo = 'PROBLEMA'
+      WHERE d.cliente_id = ?
+      ORDER BY d.criado_em DESC
+    `, [req.usuario.id]);
+
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao listar demandas:', err);
+    res.json([]);
+  }
 });
 
+// === DEMANDAS PRÓXIMAS PARA PROFISSIONAL ===
+router.get('/proximas', verificarToken, async (req, res) => {
+  if (req.usuario.tipo !== 'PROFISSIONAL') return res.status(403).json({});
+
+  const db = req.app.get('db');
+  try {
+    const [rows] = await db.query(`
+      SELECT d.*, c.nome as categoria_nome, f.url as foto_url, u.nome as cliente_nome
+      FROM demandas d
+      JOIN categorias c ON d.categoria_id = c.id
+      LEFT JOIN fotos f ON f.demanda_id = d.id AND f.tipo = 'PROBLEMA'
+      JOIN usuarios u ON d.cliente_id = u.id
+      WHERE d.status = 'ABERTA'
+      ORDER BY d.criado_em DESC
+      LIMIT 20
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.json([]);
+  }
+});
 module.exports = router;
