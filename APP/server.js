@@ -10,7 +10,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: '*' } });
 
 const pool = mysql.createPool({
-  host: 'localhost',
+  host: '10.82.8.154',
   user: 'serviconecta_user',
   password: 'senha123',
   database: 'serviconecta',

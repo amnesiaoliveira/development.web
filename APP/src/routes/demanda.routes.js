@@ -1,4 +1,3 @@
-// src/routes/demanda.routes.js
 const express = require('express');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
@@ -6,14 +5,12 @@ const path = require('path');
 const { verificarToken } = require('../middleware/auth');
 const router = express.Router();
 
-// Upload de fotos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'public/fotos'),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + uuidv4().slice(0,8) + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-// === CRIAR DEMANDA (FUNCIONANDO 100% COM SEU BANCO ATUAL) ===
 router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
   if (req.usuario.tipo !== 'CLIENTE') {
     return res.status(403).json({ mensagem: 'Acesso negado' });
@@ -27,7 +24,6 @@ router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
   const fotoId = uuidv4();
 
   try {
-    // Usa o ID do usuário logado como cliente_id (funciona com seu banco atual)
     await db.query(`
       INSERT INTO demandas 
         (id, titulo, descricao, categoria_id, cep, raio_desejado_km, orcamento_estimado, cliente_id, status, criado_em)
@@ -40,7 +36,7 @@ router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
       cep,
       raio_desejado_km || 15,
       orcamento_estimado || null,
-      req.usuario.id  // ← ID do usuário logado = cliente_id
+      req.usuario.id
     ]);
 
     if (fotoPath) {
@@ -57,7 +53,6 @@ router.post('/', verificarToken, upload.single('foto'), async (req, res) => {
   }
 });
 
-// === LISTAR MINHAS DEMANDAS ===
 router.get('/minhas', verificarToken, async (req, res) => {
   if (req.usuario.tipo !== 'CLIENTE') return res.status(403).json({});
 
@@ -80,7 +75,6 @@ router.get('/minhas', verificarToken, async (req, res) => {
   }
 });
 
-// === DEMANDAS PRÓXIMAS PARA PROFISSIONAL ===
 router.get('/proximas', verificarToken, async (req, res) => {
   if (req.usuario.tipo !== 'PROFISSIONAL') return res.status(403).json({});
 
