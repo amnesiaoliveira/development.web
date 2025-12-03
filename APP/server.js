@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-require('./src/websocket/chat')(io);
+require('./src/websocket/chat')(io, app.get('db'));
 
 const PORT = 3000;
 httpServer.listen(PORT, () => {

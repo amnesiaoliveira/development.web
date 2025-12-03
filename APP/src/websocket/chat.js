@@ -1,41 +1,34 @@
-// src/websocket/chat.js → VERSÃO CORRIGIDA E MELHORADA
+// src/websocket/chat.js → VERSÃO FINAL E GARANTIDA
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 
-module.exports = (io) => {
+module.exports = (io, db) => {
   // Middleware de autenticação do Socket.IO
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
 
-    if (!token) {
-      return next(new Error('Token de autenticação ausente'));
-    }
+    if (!token) return next(new Error('Token ausente'));
 
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET || 'serviconecta2025-chave-super-secreta');
-      socket.usuario = payload; // { id, nome, tipo, ... }
+      socket.usuario = payload;
       next();
     } catch (err) {
-      return next(new Error('Token inválido ou expirado'));
+      return next(new Error('Token inválido'));
     }
   });
 
   io.on('connection', (socket) => {
-    console.log(`Usuário conectado no chat: ${socket.usuario.nome} (${socket.usuario.id})`);
+    console.log(`Chat conectado: ${socket.usuario.nome} (${socket.usuario.id})`);
 
-    // Entrar na sala da demanda
     socket.on('entrarDemanda', (demandaId) => {
-      if (!demandaId) return;
-      socket.join(demandaId);
-      console.log(`${socket.usuario.nome} entrou na sala da demanda: ${demandaId}`);
-    });
+      socket.join(demandaId)
+  });
 
-    // Enviar mensagem
     socket.on('enviarMensagem', async ({ demandaId, mensagem }) => {
       const texto = mensagem?.trim();
       if (!texto || !demandaId) return;
 
-      const db = require('../server').app.get('db');
       const msgId = uuidv4();
 
       try {
@@ -45,8 +38,7 @@ module.exports = (io) => {
           [msgId, demandaId, socket.usuario.id, texto]
         );
 
-        // Dados completos que o frontend precisa
-        const mensagemParaEnviar = {
+        const msg = {
           id: msgId,
           demanda_id: demandaId,
           usuario_id: socket.usuario.id,
@@ -55,17 +47,17 @@ module.exports = (io) => {
           criado_em: new Date().toISOString()
         };
 
-        // Envia para todos na sala (incluindo o remetente)
-        io.to(demandaId).emit('novaMensagem', mensagemParaEnviar);
+        // Envia para todos na sala (inclusive quem enviou)
+        io.to(demandaId).emit('novaMensagem', msg);
 
       } catch (err) {
-        console.error('Erro ao salvar mensagem no banco:', err);
+        console.error('Erro ao salvar mensagem:', err);
         socket.emit('erroMensagem', { erro: 'Falha ao enviar mensagem' });
       }
     });
 
     socket.on('disconnect', () => {
-      console.log(`Usuário desconectado do chat: ${socket.usuario.nome}`);
+      console.log(`Chat desconectado: ${socket.usuario.nome}`);
     });
   });
 };
