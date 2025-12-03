@@ -4,25 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Demandas Próximas • Profissional</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-    .navbar { box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .card-demanda { border: none; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: all 0.3s; }
-    .card-demanda:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
-    .foto-pequena { width: 100%; height: 160px; object-fit: cover; }
-    .btn-fab { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; border-radius: 50%; font-size: 2rem; box-shadow: 0 8px 25px rgba(102,126,234,0.5); z-index: 1000; }
-    .counter-card { background: rgba(255,255,255,0.95); color: black; border-radius: 16px; padding: 18px; text-align: center; backdrop-filter: blur(10px); }
+    /* ============================
+       SERVICONECTA PRO – CSS DIRETO NO ARQUIVO
+       Estilo industrial / construção / azul escuro
+       ============================ */
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #fff;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(0,0,0,0.65) !important;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Contador */
+    .counter-card {
+      background: rgba(255,255,255,0.95);
+      color: #000;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Cards de demanda */
+    .card-demanda {
+      border: none;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      color: #111;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: .3s;
+    }
+    .card-demanda:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.28);
+    }
+
+    .foto-pequena {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    /* Botão flutuante */
+    .btn-fab {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      font-size: 2rem;
+      display: grid;
+      place-items: center;
+      background: #f0ad4e;
+      color: #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    /* Botões */
+    .btn-primary {
+      background: #0d1b2a !important;
+      border-color: #0d1b2a !important;
+    }
+    .btn-primary:hover {
+      background: #132238 !important;
+    }
+
+    .btn-warning {
+      background: #f0ad4e !important;
+      color: #000 !important;
+      font-weight: 700;
+    }
   </style>
 </head>
+
 <body class="text-white">
 
   <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark bg-opacity-75">
+  <nav class="navbar navbar-dark">
     <div class="container-fluid">
       <span class="navbar-brand mb-0 h1 d-flex align-items-center">
-        <i class="bi bi-briefcase-fill me-2"></i> ServiConecta Pro
+        <i class="bi bi-briefcase-fill me-2 text-warning"></i> ServiConecta Pro
       </span>
       <div class="d-flex align-items-center">
         <span class="me-3 fw-bold" id="nomeProfissional">Carregando...</span>
@@ -43,49 +121,53 @@
           <small>Total</small>
         </div>
       </div>
+
       <div class="col-6 col-md-3">
         <div class="counter-card">
           <h3 class="text-warning mb-0" id="abertas">0</h3>
           <small>Abertas</small>
         </div>
       </div>
+
       <div class="col-6 col-md-3">
         <div class="counter-card">
           <h3 class="text-info mb-0" id="hoje">0</h3>
           <small>Hoje</small>
         </div>
       </div>
+
       <div class="col-6 col-md-3">
         <div class="counter-card">
-          <h3 class="text-success mb-0" id="raiodesejado">20km</h3>
+          <h3 class="text-success mb-0" id="raiodesejado">20 km</h3>
           <small>Raio atual</small>
         </div>
       </div>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="mb-0"><i class="bi bi-geo-alt-fill"></i> Demandas próximas</h3>
-      <button class="btn btn-light btn-sm" onclick="carregarDemandas()">
+      <h3 class="mb-0"><i class="bi bi-geo-alt-fill text-warning"></i> Demandas próximas</h3>
+      <button class="btn btn-warning btn-sm" onclick="carregarDemandas()">
         <i class="bi bi-arrow-clockwise"></i> Atualizar
       </button>
     </div>
 
     <div id="listaDemandas" class="row g-4">
       <div class="col-12 text-center py-5">
-        <div class="spinner-border text-light" style="width:4rem;height:4rem;"></div>
+        <div class="spinner-border text-warning" style="width:4rem;height:4rem;"></div>
         <p class="mt-3 fs-4">Buscando demandas...</p>
       </div>
     </div>
   </div>
 
-  <!-- Botão flutuante: Meu Perfil -->
-  <a href="/profissional/perfil.html" class="btn btn-warning btn-lg rounded-circle shadow-lg btn-fab">
+  <!-- Perfil -->
+  <a href="/profissional/perfil.html" class="btn-fab">
     <i class="bi bi-person-circle"></i>
   </a>
 
   <script>
     const token = localStorage.getItem('token');
     if (!token) location.href = '/login.html';
+
     const payload = JSON.parse(atob(token.split('.')[1]));
     document.getElementById('nomeProfissional').textContent = payload.nome;
 
@@ -94,28 +176,37 @@
         const res = await fetch('/api/demandas/proximas', {
           headers: { 'Authorization': 'Bearer ' + token }
         });
-        const demandas = await res.json();
 
+        const demandas = await res.json();
         document.getElementById('totalDemandas').textContent = demandas.length;
         document.getElementById('abertas').textContent = demandas.filter(d => d.status === 'ABERTA').length;
-        document.getElementById('hoje').textContent = demandas.filter(d => new Date(d.criado_em).toDateString() === new Date().toDateString()).length;
+        document.getElementById('hoje').textContent = demandas.filter(
+          d => new Date(d.criado_em).toDateString() === new Date().toDateString()
+        ).length;
 
         const container = document.getElementById('listaDemandas');
+
         if (demandas.length === 0) {
-          container.innerHTML = `<div class="col-12 text-center py-5"><h4 class="text-white-50">Nenhuma demanda no seu raio no momento</h4></div>`;
+          container.innerHTML = `
+            <div class="col-12 text-center py-5">
+              <h4 class="text-white-50">Nenhuma demanda no seu raio no momento</h4>
+            </div>`;
           return;
         }
 
         container.innerHTML = demandas.map(d => `
           <div class="col-md-6 col-lg-4">
-            <div class="card-demanda bg-white text-dark">
+            <div class="card-demanda">
               <img src="${d.foto_url || '/img/no-photo.png'}" class="foto-pequena">
               <div class="p-3">
                 <h6 class="fw-bold text-primary">${d.titulo}</h6>
-                <p class="small mb-1"><i class="bi bi-person"></i> ${d.cliente_nome || 'Cliente'}</p>
-                <p class="small mb-2"><i class="bi bi-geo-alt"></i> ${d.cep} • ~${Math.round(Math.random()*15 + 5)}km</p>
+
+                <p class="small mb-1"><i class="bi bi-person"></i> ${d.cliente_nome || "Cliente"}</p>
+                <p class="small mb-2"><i class="bi bi-geo-alt"></i> ${d.cep} • ~${Math.round(Math.random()*15+5)} km</p>
+
                 <div class="d-flex justify-content-between align-items-center">
-                  <span class="badge bg-success fs-6">R$ ${d.orcamento_estimado || 'A combinar'}</span>
+                  <span class="badge bg-success fs-6">R$ ${d.orcamento_estimado || "A combinar"}</span>
+
                   <button class="btn btn-primary btn-sm" onclick="abrirChat('${d.id}')">
                     <i class="bi bi-chat-dots"></i> Chat
                   </button>
@@ -124,18 +215,20 @@
             </div>
           </div>
         `).join('');
-      } catch (err) {
-        document.getElementById('listaDemandas').innerHTML = `<div class="col-12 text-center text-danger">Erro ao carregar</div>`;
+
+      } catch {
+        document.getElementById('listaDemandas').innerHTML =
+          `<div class="col-12 text-center text-danger">Erro ao carregar</div>`;
       }
     }
 
     function abrirChat(demandaId) {
-      const url = `/chat/index.html?demanda=${demandaId}`;
-      window.open(url, '_blank');
+      window.open(`/chat/index.html?demanda=${demandaId}`, "_blank");
     }
 
     carregarDemandas();
-    setInterval(carregarDemandas, 30000); // atualiza a cada 30s
+    setInterval(carregarDemandas, 30000);
   </script>
+
 </body>
 </html>

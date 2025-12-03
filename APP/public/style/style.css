@@ -1,0 +1,173 @@
+/* ============================
+   SERVICONECTA - TEMA OFICIAL
+   Estilo Industrial / Construção
+   Azul escuro • Concreto • Aço
+   ============================ */
+
+/* ---------- Cores Globais ---------- */
+:root {
+  --azul-escuro: #0d1b2a;
+  --azul-meio: #1b263b;
+  --cinza-concreto: #e5e7eb;
+  --amarelo-obra: #f0ad4e;
+  --branco: #ffffff;
+  --preto: #111;
+}
+
+/* ---------- Corpo Geral ---------- */
+body {
+  background: radial-gradient(circle at top left, var(--azul-escuro), var(--azul-meio), #1f2937);
+  color: var(--branco);
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ---------- Cartões ---------- */
+.card {
+  border-radius: 18px !important;
+  border: none !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  background: #ffffff;
+  color: #1f1f1f;
+}
+
+.card-dark {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(6px);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  background: rgba(0,0,0,0.45) !important;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* ---------- Botões ---------- */
+.btn-primary {
+  background-color: var(--azul-escuro) !important;
+  border-color: var(--azul-escuro) !important;
+  font-weight: 600;
+  border-radius: 12px;
+}
+.btn-primary:hover {
+  background-color: #132238 !important;
+}
+
+.btn-warning {
+  background-color: var(--amarelo-obra) !important;
+  color: #222 !important;
+  font-weight: 700;
+  border-radius: 12px !important;
+}
+
+.btn-outline-light {
+  border-radius: 12px !important;
+}
+
+.btn-lg {
+  padding: 14px 22px !important;
+}
+
+/* ---------- Inputs ---------- */
+.form-control, .form-select, .form-range {
+  border-radius: 12px !important;
+  border: 1px solid #cfd4d8 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.form-control:focus {
+  border-color: var(--azul-meio) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25) !important;
+}
+
+/* ---------- Foto Perfil ---------- */
+.foto-perfil {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid white;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* ---------- Labels ---------- */
+.form-label {
+  font-weight: 700 !important;
+  color: var(--azul-escuro);
+}
+
+/* ---------- Checkboxes ---------- */
+.form-check-input {
+  cursor: pointer;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* ---------- Cards de Demanda ---------- */
+.card-demanda {
+  border-radius: 18px;
+  overflow: hidden;
+  border: none;
+  background: #ffffff;
+  color: #202020;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  transition: 0.25s ease;
+}
+.card-demanda:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+}
+.foto-pequena {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* ---------- Botão Flutuante (FAB) ---------- */
+.btn-fab {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  font-size: 2rem;
+  background: var(--amarelo-obra);
+  color: #000;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+/* ---------- Contadores ---------- */
+.counter-card {
+  background: rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* ---------- Títulos ---------- */
+h1, h2, h3, h4, h5 {
+  font-weight: 700;
+}
+
+/* ---------- Links ---------- */
+a {
+  color: var(--amarelo-obra);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
