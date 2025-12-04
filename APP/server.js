@@ -10,7 +10,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: '*' } });
 
 const pool = mysql.createPool({
-  host: '10.82.8.154',
+  host: '192.168.154.93',
   user: 'serviconecta_user',
   password: 'senha123',
   database: 'serviconecta',
@@ -33,6 +33,7 @@ app.use('/api/categorias', require('./src/routes/demanda.routes'));
 app.use('/api/categorias', require('./src/routes/categoria.routes'));
 app.use('/api/perfil', require('./src/routes/perfil.routes'));
 app.use('/api/mensagens', require('./src/routes/mensagem.routes'));
+app.use('/api/propostas', require('./src/routes/proposta.routes'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));

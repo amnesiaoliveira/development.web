@@ -1,9 +1,7 @@
-// src/websocket/chat.js → VERSÃO FINAL E GARANTIDA
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 
 module.exports = (io, db) => {
-  // Middleware de autenticação do Socket.IO
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
 
@@ -47,7 +45,6 @@ module.exports = (io, db) => {
           criado_em: new Date().toISOString()
         };
 
-        // Envia para todos na sala (inclusive quem enviou)
         io.to(demandaId).emit('novaMensagem', msg);
 
       } catch (err) {

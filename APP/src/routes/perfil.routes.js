@@ -1,4 +1,3 @@
-// src/routes/perfil.routes.js
 const express = require('express');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
@@ -6,14 +5,12 @@ const path = require('path');
 const { verificarToken } = require('../middleware/auth');
 const router = express.Router();
 
-// Upload de foto de perfil
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'public/fotos/perfil'),
   filename: (req, file, cb) => cb(null, req.usuario.id + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-// BUSCAR PERFIL
 router.get('/', verificarToken, async (req, res) => {
   const db = req.app.get('db');
   try {
@@ -30,7 +27,6 @@ router.post('/', verificarToken, upload.single('foto_perfil'), async (req, res) 
   const { bio, raio_atuacao_km, categorias } = req.body;
   const foto_perfil = req.file ? `/fotos/perfil/${req.file.filename}` : null;
 
-  // GARANTE QUE CATEGORIAS SEJA UM JSON VÁLIDO
   let categoriasJson = '[]';
   if (categorias) {
     try {

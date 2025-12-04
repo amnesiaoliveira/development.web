@@ -1,8 +1,6 @@
-// src/routes/categoria.routes.js
 const express = require('express');
 const router = express.Router();
 
-// ROTA PÚBLICA — NÃO PRECISA DE TOKEN
 router.get('/', async (req, res) => {
   const db = req.app.get('db');
   try {
